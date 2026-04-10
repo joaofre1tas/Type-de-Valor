@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/s
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { TabGeneral } from '@/components/admin/TabGeneral'
 import { TabVisual } from '@/components/admin/TabVisual'
-import { TabSteps } from '@/components/admin/TabSteps'
+import { TabFlowBuilder } from '@/components/admin/FlowBuilder/TabFlowBuilder'
 import { TabLogic } from '@/components/admin/TabLogic'
 import { TabScheduling } from '@/components/admin/TabScheduling'
 import { Separator } from '@/components/ui/separator'
@@ -20,7 +20,7 @@ export default function AdminPage() {
       case 'visual':
         return <TabVisual />
       case 'steps':
-        return <TabSteps />
+        return <TabFlowBuilder />
       case 'logic':
         return <TabLogic />
       case 'scheduling':

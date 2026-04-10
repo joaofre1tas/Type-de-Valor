@@ -1,19 +1,30 @@
 export type InputType = 'text' | 'phone' | 'email' | 'select' | 'calendar' | 'none'
+export type NodeType = 'trigger' | 'message' | 'input' | 'logic' | 'appointment'
 
 export interface StepOption {
   id: string
   label: string
   value: string
+  targetStepId?: string
+}
+
+export interface RegionalMessage {
+  region: 'SP' | 'RJ' | 'Sul' | 'Nordeste' | 'Brasil'
+  message: string
 }
 
 export interface FunnelStep {
   id: string
-  order: number
+  type: NodeType
+  position: { x: number; y: number }
+  nextStepId?: string
+
   mentorMessage: string
   inputType: InputType
   variableName: string
   required: boolean
   options?: StepOption[]
+  regionalMessages?: RegionalMessage[]
 }
 
 export interface LogicRule {

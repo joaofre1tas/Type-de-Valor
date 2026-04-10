@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FunnelStep, InputType } from '@/types/funnel'
+import { FunnelStep, InputType, NodeType, RegionalMessage } from '@/types/funnel'
 import {
   Sheet,
   SheetContent,
@@ -52,56 +52,144 @@ export function StepEditSheet({ step, isOpen, onClose, onSave }: Props) {
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Mensagem do Mentor</Label>
-            <Textarea
-              rows={4}
-              value={draft.mentorMessage}
-              onChange={(e) => setDraft({ ...draft, mentorMessage: e.target.value })}
-            />
-            <div className="flex gap-2 flex-wrap pt-1">
-              <span className="text-xs text-muted-foreground mr-1">Inserir variável:</span>
-              {['nome', 'empresa', 'cidade'].map((v) => (
-                <button
-                  key={v}
-                  onClick={() => handleAddVar(v)}
-                  className="text-xs bg-muted px-2 py-0.5 rounded hover:bg-primary/20 text-primary"
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
+            <Label>Tipo de Nó</Label>
+            <Select
+              value={draft.type}
+              onValueChange={(v) => setDraft({ ...draft, type: v as NodeType })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="trigger">Gatilho (Início)</SelectItem>
+                <SelectItem value="message">Mensagem Simples</SelectItem>
+                <SelectItem value="input">Captura de Dado</SelectItem>
+                <SelectItem value="appointment">Agendamento</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {draft.type !== 'trigger' && (
             <div className="space-y-2">
-              <Label>Nome da Variável Salva</Label>
-              <Input
-                value={draft.variableName}
-                onChange={(e) => setDraft({ ...draft, variableName: e.target.value })}
-                placeholder="Ex: nome"
+              <Label>Mensagem do Mentor</Label>
+              <Textarea
+                rows={4}
+                value={draft.mentorMessage}
+                onChange={(e) => setDraft({ ...draft, mentorMessage: e.target.value })}
+                className="bg-[var(--av-surface)]"
               />
+              <div className="flex gap-2 flex-wrap pt-1">
+                <span className="text-xs text-muted-foreground mr-1">Inserir:</span>
+                {['nome', 'empresa', 'cidade', 'segmento', 'cargo'].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => handleAddVar(v)}
+                    className="text-xs bg-[var(--av-surface)] border border-[var(--av-border)] px-2 py-0.5 rounded hover:text-[var(--av-accent)]"
+                  >
+                    {`{{${v}}}`}
+                  </button>
+                ))}
+              </div>
             </div>
+          )}
 
-            <div className="space-y-2">
-              <Label>Tipo de Input</Label>
-              <Select
-                value={draft.inputType}
-                onValueChange={(v) => setDraft({ ...draft, inputType: v as InputType })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text">Texto Curto</SelectItem>
-                  <SelectItem value="phone">Telefone (BR)</SelectItem>
-                  <SelectItem value="email">E-mail</SelectItem>
-                  <SelectItem value="select">Múltipla Escolha</SelectItem>
-                  <SelectItem value="calendar">Calendário</SelectItem>
-                  <SelectItem value="none">Nenhum (Apenas mensagem)</SelectItem>
-                </SelectContent>
-              </Select>
+          {draft.type === 'input' && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Variável Salva</Label>
+                <Input
+                  value={draft.variableName}
+                  onChange={(e) => setDraft({ ...draft, variableName: e.target.value })}
+                  placeholder="Ex: nome"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Tipo de Input</Label>
+                <Select
+                  value={draft.inputType}
+                  onValueChange={(v) => setDraft({ ...draft, inputType: v as InputType })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="text">Texto Curto</SelectItem>
+                    <SelectItem value="phone">Telefone (BR)</SelectItem>
+                    <SelectItem value="email">E-mail</SelectItem>
+                    <SelectItem value="select">Múltipla Escolha</SelectItem>
+                    <SelectItem value="none">Nenhum</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+          )}
+
+          {draft.inputType === 'phone' && (
+            <div className="space-y-3 border p-4 rounded-lg bg-muted/30">
+              <Label>Mensagens Regionalizadas (por DDD)</Label>
+              {draft.regionalMessages?.map((rm, i) => (
+                <div key={i} className="flex gap-2 items-start">
+                  <Select
+                    value={rm.region}
+                    onValueChange={(v: any) => {
+                      const newRm = [...(draft.regionalMessages || [])]
+                      newRm[i] = { ...newRm[i], region: v }
+                      setDraft({ ...draft, regionalMessages: newRm })
+                    }}
+                  >
+                    <SelectTrigger className="w-[120px] shrink-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SP">SP (11-19)</SelectItem>
+                      <SelectItem value="RJ">RJ (21, 22, 24)</SelectItem>
+                      <SelectItem value="Sul">Sul</SelectItem>
+                      <SelectItem value="Nordeste">Nordeste</SelectItem>
+                      <SelectItem value="Brasil">Outros</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Textarea
+                    value={rm.message}
+                    onChange={(e) => {
+                      const newRm = [...(draft.regionalMessages || [])]
+                      newRm[i] = { ...newRm[i], message: e.target.value }
+                      setDraft({ ...draft, regionalMessages: newRm })
+                    }}
+                    rows={2}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setDraft({
+                        ...draft,
+                        regionalMessages: draft.regionalMessages?.filter((_, idx) => idx !== i),
+                      })
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => {
+                  setDraft({
+                    ...draft,
+                    regionalMessages: [
+                      ...(draft.regionalMessages || []),
+                      { region: 'SP', message: 'Mensagem...' },
+                    ],
+                  })
+                }}
+              >
+                <Plus className="w-4 h-4 mr-2" /> Adicionar Regionalização
+              </Button>
+            </div>
+          )}
 
           <div className="flex items-center justify-between border p-3 rounded-lg">
             <div>
@@ -114,7 +202,7 @@ export function StepEditSheet({ step, isOpen, onClose, onSave }: Props) {
             />
           </div>
 
-          {draft.inputType === 'select' && (
+          {draft.type === 'input' && draft.inputType === 'select' && (
             <div className="space-y-3 border p-4 rounded-lg bg-muted/30">
               <Label>Opções de Escolha</Label>
               {draft.options?.map((opt, i) => (
@@ -159,7 +247,8 @@ export function StepEditSheet({ step, isOpen, onClose, onSave }: Props) {
           )}
 
           <Button
-            className="w-full mt-4"
+            className="w-full mt-4 bg-av-gradient shadow-av-glow text-white hover:opacity-90 border-none rounded-av transition-all"
+            style={{ backgroundImage: 'var(--av-gradient-cta)' }}
             onClick={() => {
               onSave(draft)
               onClose()

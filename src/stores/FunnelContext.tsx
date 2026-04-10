@@ -15,8 +15,20 @@ const DEFAULT_CONFIG: FunnelConfig = {
 
 const DEFAULT_STEPS: FunnelStep[] = [
   {
+    id: 'trigger',
+    type: 'trigger',
+    position: { x: 50, y: 150 },
+    nextStepId: 's1',
+    mentorMessage: '',
+    inputType: 'none',
+    variableName: '',
+    required: false,
+  },
+  {
     id: 's1',
-    order: 1,
+    type: 'input',
+    position: { x: 350, y: 150 },
+    nextStepId: 's2',
     mentorMessage: 'Olá! Sou seu mentor. Para começarmos, qual o seu nome?',
     inputType: 'text',
     variableName: 'nome',
@@ -24,15 +36,26 @@ const DEFAULT_STEPS: FunnelStep[] = [
   },
   {
     id: 's2',
-    order: 2,
+    type: 'input',
+    position: { x: 700, y: 150 },
+    nextStepId: 's3',
     mentorMessage: 'Muito prazer, {{nome}}! Qual o seu melhor WhatsApp?',
     inputType: 'phone',
     variableName: 'telefone',
     required: true,
+    regionalMessages: [
+      {
+        region: 'SP',
+        message: 'Que legal, vejo que é de SP! Temos uma condição especial pra sua região.',
+      },
+      { region: 'RJ', message: 'Maravilha, um carioca! Temos muita atuação no RJ.' },
+    ],
   },
   {
     id: 's3',
-    order: 3,
+    type: 'input',
+    position: { x: 1050, y: 150 },
+    nextStepId: 's4',
     mentorMessage: 'E qual é a sua cidade?',
     inputType: 'text',
     variableName: 'cidade',
@@ -40,7 +63,9 @@ const DEFAULT_STEPS: FunnelStep[] = [
   },
   {
     id: 's4',
-    order: 4,
+    type: 'input',
+    position: { x: 1400, y: 150 },
+    nextStepId: 's5',
     mentorMessage: 'Pode me passar o seu e-mail profissional?',
     inputType: 'email',
     variableName: 'email',
@@ -48,7 +73,9 @@ const DEFAULT_STEPS: FunnelStep[] = [
   },
   {
     id: 's5',
-    order: 5,
+    type: 'input',
+    position: { x: 1750, y: 150 },
+    nextStepId: 's6',
     mentorMessage: 'Qual o nome da sua empresa?',
     inputType: 'text',
     variableName: 'empresa',
@@ -56,7 +83,9 @@ const DEFAULT_STEPS: FunnelStep[] = [
   },
   {
     id: 's6',
-    order: 6,
+    type: 'input',
+    position: { x: 2100, y: 150 },
+    nextStepId: 's7',
     mentorMessage: 'Qual o seu cargo atual na {{empresa}}?',
     inputType: 'select',
     variableName: 'cargo',
@@ -70,7 +99,8 @@ const DEFAULT_STEPS: FunnelStep[] = [
   },
   {
     id: 's7',
-    order: 7,
+    type: 'appointment',
+    position: { x: 2450, y: 150 },
     mentorMessage: 'Ótimo! Vamos agendar nossa reunião de diagnóstico. Escolha um horário:',
     inputType: 'calendar',
     variableName: 'agendamento',

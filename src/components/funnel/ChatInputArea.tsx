@@ -44,8 +44,8 @@ export function ChatInputArea({ step, onSubmit, disabled }: ChatInputAreaProps) 
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 glass-panel z-10 flex justify-center">
-      <form onSubmit={handleSubmit} className="w-full max-w-[680px] flex gap-2 items-end">
+    <div className="fixed bottom-0 left-0 right-0 p-4 bg-[var(--av-bg)] border-t border-[var(--av-border)] z-10 flex justify-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+      <form onSubmit={handleSubmit} className="w-full max-w-[680px] flex gap-2 items-end relative">
         {(step.inputType === 'text' || step.inputType === 'email') && (
           <Input
             type={step.inputType}
